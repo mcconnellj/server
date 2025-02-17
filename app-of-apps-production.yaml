@@ -1,22 +1,22 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: app-of-apps-dev
+  name: app-of-apps-production
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
-  project: development
+  project: production
   source:
-    repoURL: 'git@github.com:ranrubin/argocd-app-of-apps.git'
-    targetRevision: rev
-    path: charts/apps
+    repoURL: 'https://github.com/mcconnellj/server'
+    targetRevision: production
+    path: apps
     helm:
       valueFiles:
-        - values.yaml
+        - values-production.yaml
   destination:
     server: https://kubernetes.default.svc
-    namespace: dev
+    namespace: argocd
   syncPolicy:
     automated:
       selfHeal: true
