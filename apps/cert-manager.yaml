@@ -6,18 +6,19 @@ metadata:
   finalizers:
   - resources-finalizer.argocd.argoproj.io
 spec:
-  project: default
+  destination:
+    namespace: cert-manager
+    name: in-cluster
+  project: development
   source:
     repoURL: https://charts.jetstack.io
     chart: cert-manager
     targetRevision: 'v1.11.0'
     helm:
+    
       parameters:
         - name: installCRDs
           value: 'true'
-  destination:
-    namespace: cert-manager
-    name: kind
   syncPolicy:
     automated: {}
     syncOptions:
