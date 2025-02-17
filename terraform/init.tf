@@ -13,16 +13,10 @@ resource "null_resource" "minikube_start" {
   }
 }
 
-# Add the Argo Helm repository
-resource "helm_repository" "argo_repo" {
-  name = "argo"
-  url  = "https://argoproj.github.io/argo-helm"
-}
-
-# Install ArgoCD using Helm
+# Install ArgoCD using Helm (directly using the repository URL)
 resource "helm_release" "argo_cd" {
   name       = "my-argo-cd"
-  repository = helm_repository.argo_repo.name
+  repository = "https://argoproj.github.io/argo-helm"
   chart      = "argo-cd"
   version    = "7.8.2"
 
