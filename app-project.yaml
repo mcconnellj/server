@@ -6,11 +6,10 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
-  description: Production project
   sourceRepos:
   - '*'
   destinations:
-  - namespace: '*'
+  - namespace: 'production'
     server: https://kubernetes.default.svc
   clusterResourceWhitelist:
   - group: '*'
