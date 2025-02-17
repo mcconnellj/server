@@ -13,12 +13,18 @@ resource "null_resource" "minikube_start" {
   }
 }
 
-# Install ArgoCD using Helm (directly using the repository URL)
+# Install ArgoCD using Helm (skip CRD installation)
 resource "helm_release" "argo_cd" {
   name       = "my-argo-cd"
   repository = "https://argoproj.github.io/argo-helm"
   chart      = "argo-cd"
   version    = "7.8.2"
+  
+  # Disable the installation of CRDs, as they already exist
+  set {
+    name  = "installCRDs"
+    value = "false"
+  }
 
   depends_on = [null_resource.minikube_start]  # Ensures Minikube starts first
 }
@@ -27,9 +33,6 @@ resource "helm_release" "argo_cd" {
 resource "null_resource" "argocd_port_forward" {
   provisioner "local-exec" {
     command = "kubectl port-forward svc/argocd-server -n argocd 8080:443"
-    environment = {
-      KUBEVIRT_KUBEVIRT_VERSION = "v0.38.0"
-    }
   }
 
   depends_on = [helm_release.argo_cd]
