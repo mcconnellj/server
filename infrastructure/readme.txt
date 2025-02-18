@@ -15,8 +15,7 @@ git pull
 cd ./infrastructure
 terraform init
 terraform apply -auto-approve
-
-
+kubectl port-forward svc/argocd-server -n argocd 8080:443
 
 After you are done that use these credentials to clone the private git repo in to the ~/ directory. stringData:
 

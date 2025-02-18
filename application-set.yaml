@@ -12,7 +12,7 @@ spec:
           - path: "apps/*"   # for development environment
     - git:
         repoURL: https://github.com/mcconnellj/server
-        revision: production  # or development, depending on the environment
+        revision: main  # or development, depending on the environment
         directories:
           - path: "apps/*"   # for production environment
   template:
@@ -23,7 +23,7 @@ spec:
       source:
         repoURL: https://github.com/mcconnellj/server
         targetRevision: "{{ .git.revision }}"  # Use the current branch (development/production)
-        path: "apps/"  # Path to the environment folder
+        path: "apps/*"  # Path to the environment folder (relative path)
       destination:
         server: https://kubernetes.default.svc
         namespace: "{{ .git.revision }}"  # Namespace is the directory name (dev/prod)

@@ -29,7 +29,7 @@ provider "helm" {
   }
 }
 
-# Needed before apply-yaml becuase it installs crds
+# Needed before apply-yaml because it installs CRDs
 resource "helm_release" "argocd" {
   depends_on = [null_resource.start-cluster]
   name       = "argocd"
@@ -47,7 +47,6 @@ resource "helm_release" "argocd" {
     EOT
   ]
 }
-
 
 resource "null_resource" "apply-namespaces" {
   depends_on = [null_resource.start-cluster]
