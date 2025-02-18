@@ -7,11 +7,6 @@ spec:
   generators:
     - git:
         repoURL: https://github.com/mcconnellj/server
-        revision: development  # or production, depending on the environment
-        directories:
-          - path: "apps/*"   # for development environment
-    - git:
-        repoURL: https://github.com/mcconnellj/server
         revision: main  # or development, depending on the environment
         directories:
           - path: "apps/*"   # for production environment
