@@ -4,23 +4,24 @@ metadata:
   name: cert-manager
   namespace: argocd
   finalizers:
-  - resources-finalizer.argocd.argoproj.io
+    - resources-finalizer.argocd.argoproj.io
 spec:
-  destination:
-    namespace: cert-manager
-    name: in-cluster
   project: development
   source:
     repoURL: https://charts.jetstack.io
     chart: cert-manager
     targetRevision: 'v1.11.0'
     helm:
-    
       parameters:
         - name: installCRDs
           value: 'true'
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cert-manager
   syncPolicy:
-    automated: {}
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
