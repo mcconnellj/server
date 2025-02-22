@@ -7,3 +7,8 @@ resource "helm_release" "argocd" {
   create_namespace = true
   values = [file("../apps/argocd/values.yaml")]
 }
+
+resource "kubernetes_manifest" "applicationset" {
+  depends_on = [helm_release.argocd]
+  manifest = yamldecode(file("../manifests/application-set.yaml"))
+}

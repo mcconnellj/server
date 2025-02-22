@@ -1,4 +1,4 @@
-apiVersion: argoproj.io/v1alpha1
+apiVersion: argoproj.io/v1alpha2
 kind: ApplicationSet
 metadata:
   name: application-set
@@ -7,21 +7,24 @@ spec:
   generators:
     - git:
         repoURL: https://github.com/mcconnellj/server
-        revision: main  # or development, depending on the environment
+        revision: main
         directories:
-          - path: "apps/*"   # for production environment
+          - path: "apps/*"
   template:
     metadata:
-      name: "{{ .git.revision | basename }}"  # app name based on the directory name
+      name: "{{ .git.revision | basename }}"
     spec:
       project: "{{ .git.revision }}"
       source:
         repoURL: https://github.com/mcconnellj/server
-        targetRevision: "{{ .git.revision }}"  # Use the current branch (development/production)
-        path: "apps/*"  # Path to the environment folder (relative path)
+        targetRevision: "{{ .git.revision }}"
+        path: "apps/*"
+        helm:
+          secretRef:
+            secretName: argocd-repo-server
       destination:
         server: https://kubernetes.default.svc
-        namespace: "{{ .git.revision }}"  # Namespace is the directory name (dev/prod)
+        namespace: "{{ .git.revision }}"
       syncPolicy:
         automated:
           prune: true
