@@ -5,7 +5,6 @@ global:
 server:
   extraArgs:
   - --insecure
-  - --create-namespace
   livenessProbe:
     enabled: true
   readinessProbe:
