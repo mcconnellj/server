@@ -1,0 +1,46 @@
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    env_file:
+      - .env
+    environment:
+      - DOMAIN=https://${VAULTWARDEN_SUBDOMAIN}.${DOMAIN}
+    volumes:
+      - vw-data:/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vaultwarden.rule=Host(`${VAULTWARDEN_SUBDOMAIN}.${DOMAIN}`)"
+      - "traefik.http.routers.vaultwarden.entrypoints=websecure"
+      - "traefik.http.routers.vaultwarden.tls.certresolver=myresolver"
+    networks:
+      - traefik-net
+    restart: unless-stopped
+
+  code-server:
+    image: lscr.io/linuxserver/code-server:latest
+    container_name: code-server
+    env_file:
+      - .env
+    environment:
+      - PASSWORD=${CODE_SERVER_PASSWORD}  # Set this in .env
+      - SUDO_PASSWORD=${CODE_SERVER_SUDO_PASSWORD}  # Optional for sudo access
+    volumes:
+      - code-server-data:/config  # Persistent storage for settings & extensions
+      - /var/run/docker.sock:/var/run/docker.sock  # (Optional) Manage Docker from VS Code
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.code-server.rule=Host(`${CODE_SERVER_SUBDOMAIN}.${DOMAIN}`)"
+      - "traefik.http.routers.code-server.entrypoints=websecure"
+      - "traefik.http.routers.code-server.tls.certresolver=myresolver"
+    networks:
+      - traefik-net
+    restart: unless-stopped
+
+  traefik:
+    image: traefik:latest
+    container_name: traefik
+    env_file:
+      - .env
+    command:
+      - "--providers.docker=true"
