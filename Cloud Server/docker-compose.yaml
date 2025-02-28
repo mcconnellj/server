@@ -1,0 +1,65 @@
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    env_file:
+      - .env
+    environment:
+      - DOMAIN=https://${VAULTWARDEN_SUBDOMAIN}.${DOMAIN}
+    volumes:
+      - vw-data:/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vaultwarden.rule=Host(`${VAULTWARDEN_SUBDOMAIN}.${DOMAIN}`)"
+      - "traefik.http.routers.vaultwarden.entrypoints=websecure"
+      - "traefik.http.routers.vaultwarden.tls.certresolver=myresolver"
+    networks:
+      - traefik-net
+    restart: unless-stopped
+
+  firefly-iii:
+    image: jc5x/firefly-iii:latest
+    container_name: firefly-iii
+    env_file:
+      - .env
+    environment:
+      - APP_KEY=${FIREFLY_APP_KEY}
+      - DB_HOST=${FIREFLY_DB_HOST}
+      - DB_PORT=${FIREFLY_DB_PORT}
+      - DB_DATABASE=${FIREFLY_DB_DATABASE}
+      - DB_USERNAME=${FIREFLY_DB_USERNAME}
+      - DB_PASSWORD=${FIREFLY_DB_PASSWORD}
+      - TRUSTED_PROXIES=*
+    volumes:
+      - firefly-iii-data:/var/www/html/storage
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.firefly-iii.rule=Host(`${FIREFLY_SUBDOMAIN}.${DOMAIN}`)"
+      - "traefik.http.routers.firefly-iii.entrypoints=websecure"
+      - "traefik.http.routers.firefly-iii.tls.certresolver=myresolver"
+    networks:
+      - traefik-net
+    restart: unless-stopped
+
+  traefik:
+    image: traefik:latest
+    container_name: traefik
+    env_file:
+      - .env
+    command:
+      - "--providers.docker=true"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`${TRAEFIK_SUBDOMAIN}.${DOMAIN}`)"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.tls.certresolver=myresolver"
+    networks:
+      - traefik-net
+    restart: unless-stopped
+
+volumes:
+  vw-data:
+  firefly-iii-data:
+
+networks:
+  traefik-net:
